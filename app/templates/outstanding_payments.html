@@ -1,0 +1,185 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Outstanding Payments</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        h1 {
+            color: #1f4e79;
+        }
+
+        .nav {
+            margin-bottom: 20px;
+        }
+
+        .nav a {
+            display: inline-block;
+            padding: 10px 15px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            background: #1f4e79;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #1f4e79;
+            color: white;
+        }
+
+        .balance {
+            color: #c0392b;
+            font-weight: bold;
+        }
+
+        .partial {
+            color: #e67e22;
+            font-weight: bold;
+        }
+
+        .unpaid {
+            color: #c0392b;
+            font-weight: bold;
+        }
+
+        .btn {
+            padding: 7px 12px;
+            background: #198754;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 30px;
+            color: #777;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Outstanding Payments</h1>
+
+    <div class="nav">
+        <a href="{{ url_for('payments.payment_dashboard') }}">Payment Dashboard</a>
+        <a href="{{ url_for('payments.payment_history') }}">Payment History</a>
+        <a href="{{ url_for('invoices.invoice_history') }}">Invoice History</a>
+    </div>
+
+    <table>
+
+        <thead>
+            <tr>
+                <th>Invoice No</th>
+                <th>Order No</th>
+                <th>Customer</th>
+                <th>Invoice Total</th>
+                <th>Paid Amount</th>
+                <th>Outstanding</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for row in outstanding_rows %}
+
+                <tr>
+
+                    <td>{{ row.invoice.invoice_number }}</td>
+
+                    <td>
+                        {% if row.order %}
+                            {{ row.order.order_number }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if row.order %}
+                            {{ row.order.customer_name }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        ₹{{ "%.2f"|format(row.invoice.total_amount) }}
+                    </td>
+
+                    <td>
+                        ₹{{ "%.2f"|format(row.total_paid) }}
+                    </td>
+
+                    <td class="balance">
+                        ₹{{ "%.2f"|format(row.balance) }}
+                    </td>
+
+                    <td>
+                        {% if row.invoice.status == "Partially Paid" %}
+                            <span class="partial">Partially Paid</span>
+                        {% else %}
+                            <span class="unpaid">{{ row.invoice.status }}</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <a class="btn"
+                           href="{{ url_for('payments.record_invoice_payment', invoice_id=row.invoice.id) }}">
+                            Receive Payment
+                        </a>
+                    </td>
+
+                </tr>
+
+            {% else %}
+
+                <tr>
+                    <td colspan="8" class="empty">
+                        No outstanding payments. All invoices are fully paid!
+                    </td>
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+</body>
+</html>

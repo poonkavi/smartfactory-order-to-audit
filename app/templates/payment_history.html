@@ -1,0 +1,157 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment History</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        h1 {
+            color: #1f4e79;
+        }
+
+        .nav {
+            margin-bottom: 20px;
+        }
+
+        .nav a {
+            display: inline-block;
+            padding: 10px 15px;
+            margin-right: 8px;
+            margin-bottom: 8px;
+            background: #1f4e79;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #1f4e79;
+            color: white;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 30px;
+            color: #777;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Payment History</h1>
+
+    <div class="nav">
+        <a href="{{ url_for('payments.payment_dashboard') }}">Payment Dashboard</a>
+        <a href="{{ url_for('payments.outstanding_payments') }}">Outstanding Payments</a>
+        <a href="{{ url_for('invoices.invoice_history') }}">Invoice History</a>
+    </div>
+
+    <table>
+
+        <thead>
+            <tr>
+                <th>Payment ID</th>
+                <th>Invoice No</th>
+                <th>Order No</th>
+                <th>Customer</th>
+                <th>Amount Received</th>
+                <th>Payment Method</th>
+                <th>Reference Number</th>
+                <th>Payment Date</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for row in payment_rows %}
+
+                <tr>
+
+                    <td>{{ row.payment.id }}</td>
+
+                    <td>
+                        {% if row.invoice %}
+                            {{ row.invoice.invoice_number }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if row.order %}
+                            {{ row.order.order_number }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if row.order %}
+                            {{ row.order.customer_name }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        ₹{{ "%.2f"|format(row.payment.amount) }}
+                    </td>
+
+                    <td>{{ row.payment.payment_method }}</td>
+
+                    <td>
+                        {{ row.payment.reference_number or "-" }}
+                    </td>
+
+                    <td>
+                        {{ row.payment.payment_date.strftime("%d-%m-%Y %H:%M") if row.payment.payment_date else "-" }}
+                    </td>
+
+                </tr>
+
+            {% else %}
+
+                <tr>
+                    <td colspan="8" class="empty">
+                        No payments recorded yet.
+                    </td>
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+</body>
+</html>

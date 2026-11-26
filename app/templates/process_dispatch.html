@@ -1,0 +1,176 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Process Dispatch</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 30px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px #ddd;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #e9eef5;
+        }
+
+        input {
+            padding: 8px;
+            width: 100px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 10px;
+        }
+
+        button {
+            background: #2563eb;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        a {
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Process Dispatch</h1>
+
+<div class="card">
+
+    <h2>{{ order.order_number }}</h2>
+
+    <p>
+        <strong>Customer:</strong>
+        {{ order.customer_name }}
+    </p>
+
+    <p>
+        <strong>Customer State:</strong>
+        {{ order.customer_state }}
+    </p>
+
+    <p>
+        <strong>Status:</strong>
+        {{ order.status }}
+    </p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <p style="color:red">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST">
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Ordered Qty</th>
+                    <th>Dispatched Qty</th>
+                    <th>Remaining Qty</th>
+                    <th>Available Stock</th>
+                    <th>Dispatch Now</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for row in item_rows %}
+
+                <tr>
+                    <td>{{ row.product.name }}</td>
+
+                    <td>{{ row.item.quantity }}</td>
+
+                    <td>
+                        {{ row.item.dispatched_quantity or 0 }}
+                    </td>
+
+                    <td>{{ row.remaining }}</td>
+
+                    <td>{{ row.available_stock }}</td>
+
+                    <td>
+                        {% if row.remaining > 0 %}
+                            <input
+                                type="number"
+                                name="dispatch_qty_{{ row.item.id }}"
+                                min="0"
+                                max="{{ row.remaining }}"
+                                value="0"
+                            >
+                        {% else %}
+                            Completed
+                        {% endif %}
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+        <br>
+
+        <label>
+            <strong>Dispatch Notes</strong>
+        </label>
+
+        <br><br>
+
+        <textarea
+            name="notes"
+            rows="3"
+            placeholder="Enter transport details or dispatch notes"
+        ></textarea>
+
+        <br><br>
+
+        <button type="submit">
+            Confirm Dispatch
+        </button>
+
+    </form>
+
+    <br>
+
+    <a href="{{ url_for('dispatch.dispatch_dashboard') }}">
+        Back to Dispatch Dashboard
+    </a>
+
+</div>
+
+</body>
+</html>

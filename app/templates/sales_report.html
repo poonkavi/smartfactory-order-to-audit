@@ -1,0 +1,231 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Sales Report - SmartFactory</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1250px;
+            margin: auto;
+        }
+
+        h1 {
+            color: #1f4e79;
+        }
+
+        .nav {
+            margin-bottom: 20px;
+        }
+
+        .nav a {
+            display: inline-block;
+            padding: 10px 15px;
+            margin: 5px 5px 5px 0;
+            background: #1f4e79;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .summary {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 25px 0;
+        }
+
+        .card {
+            background: white;
+            padding: 22px;
+            border-radius: 8px;
+            flex: 1;
+            min-width: 220px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .card h3 {
+            color: #666;
+            margin-top: 0;
+        }
+
+        .card p {
+            font-size: 25px;
+            font-weight: bold;
+            color: #1f4e79;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #1f4e79;
+            color: white;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .status {
+            font-weight: bold;
+        }
+
+        .pending {
+            color: #e67e22;
+        }
+
+        .approved {
+            color: #198754;
+        }
+
+        .rejected {
+            color: #dc3545;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 30px;
+            color: #777;
+        }
+
+        .print-btn {
+            padding: 10px 15px;
+            background: #198754;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        @media print {
+            .nav, .print-btn {
+                display: none;
+            }
+
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .card {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Sales Report</h1>
+
+    <div class="nav">
+        <a href="{{ url_for('reports.reports_dashboard') }}">Reports Dashboard</a>
+        <a href="{{ url_for('reports.payment_report') }}">Payment Report</a>
+        <a href="{{ url_for('reports.outstanding_report') }}">Outstanding Report</a>
+        <a href="{{ url_for('salesman.new_order') }}">Create Sales Order</a>
+    </div>
+
+    <div class="summary">
+
+        <div class="card">
+            <h3>Total Orders</h3>
+            <p>{{ total_orders }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Total Sales Value</h3>
+            <p>₹{{ "%.2f"|format(total_sales) }}</p>
+        </div>
+
+    </div>
+
+    <button class="print-btn" onclick="window.print()">
+        Print / Save as PDF
+    </button>
+
+    <table>
+
+        <thead>
+            <tr>
+                <th>Order Number</th>
+                <th>Customer</th>
+                <th>State</th>
+                <th>Salesman ID</th>
+                <th>Order Date</th>
+                <th>Status</th>
+                <th>Order Amount</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for order in orders %}
+
+                <tr>
+
+                    <td>{{ order.order_number }}</td>
+
+                    <td>{{ order.customer_name }}</td>
+
+                    <td>{{ order.customer_state }}</td>
+
+                    <td>{{ order.salesman_id }}</td>
+
+                    <td>
+                        {{ order.order_date.strftime("%d-%m-%Y") if order.order_date else "-" }}
+                    </td>
+
+                    <td class="status
+                        {% if order.status == 'Pending' %}pending
+                        {% elif order.status == 'Approved' %}approved
+                        {% elif order.status == 'Rejected' %}rejected
+                        {% endif %}">
+                        {{ order.status }}
+                    </td>
+
+                    <td>
+                        ₹{{ "%.2f"|format(order.total_amount or 0) }}
+                    </td>
+
+                </tr>
+
+            {% else %}
+
+                <tr>
+                    <td colspan="7" class="empty">
+                        No sales orders found.
+                    </td>
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+</body>
+</html>

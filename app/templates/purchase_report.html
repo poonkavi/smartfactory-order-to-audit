@@ -1,0 +1,226 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Purchase Report - SmartFactory</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 25px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        h1 {
+            color: #243447;
+        }
+
+        .cards {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 25px 0;
+        }
+
+        .card {
+            background: white;
+            padding: 22px;
+            border-radius: 10px;
+            flex: 1;
+            min-width: 200px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .card h3 {
+            color: #64748b;
+            margin-top: 0;
+        }
+
+        .card p {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1e293b;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #334155;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        .nav {
+            margin-bottom: 20px;
+        }
+
+        .nav a {
+            display: inline-block;
+            margin-right: 10px;
+            margin-bottom: 8px;
+            text-decoration: none;
+            background: #334155;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+        }
+
+        .nav a:hover {
+            background: #475569;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 25px;
+            color: #64748b;
+        }
+
+        .print-btn {
+            background: #0f766e;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 15px;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .nav, .print-btn {
+                display: none;
+            }
+
+            .card {
+                box-shadow: none;
+                border: 1px solid #ddd;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Purchase Report</h1>
+    <p>SmartFactory - Manufacturing & Distribution</p>
+
+    <div class="nav">
+        <a href="{{ url_for('reports.reports_dashboard') }}">
+            Reports Dashboard
+        </a>
+
+        <a href="{{ url_for('reports.sales_report') }}">
+            Sales Report
+        </a>
+
+        <a href="{{ url_for('purchases.purchase_page') }}">
+            Purchase Module
+        </a>
+    </div>
+
+    <button class="print-btn" onclick="window.print()">
+        Print / Save as PDF
+    </button>
+
+    <div class="cards">
+
+        <div class="card">
+            <h3>Total Purchase Records</h3>
+            <p>{{ total_purchase_records }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Total Quantity Purchased</h3>
+            <p>{{ total_quantity }}</p>
+        </div>
+
+        <div class="card">
+            <h3>Total Purchase Amount</h3>
+            <p>₹{{ "%.2f"|format(total_purchase_amount) }}</p>
+        </div>
+
+    </div>
+
+    <h2>Purchase History</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Supplier</th>
+                <th>Invoice Number</th>
+                <th>Inventory Item ID</th>
+                <th>Quantity</th>
+                <th>Unit Rate</th>
+                <th>Total Amount</th>
+                <th>Purchase Date</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for purchase in purchases %}
+
+            <tr>
+                <td>{{ loop.index }}</td>
+
+                <td>{{ purchase.supplier_name }}</td>
+
+                <td>{{ purchase.invoice_number }}</td>
+
+                <td>{{ purchase.item_id }}</td>
+
+                <td>{{ purchase.quantity }}</td>
+
+                <td>₹{{ "%.2f"|format(purchase.unit_rate) }}</td>
+
+                <td>₹{{ "%.2f"|format(purchase.total_amount) }}</td>
+
+                <td>
+                    {{ purchase.purchase_date.strftime('%d-%m-%Y') }}
+                </td>
+            </tr>
+
+            {% else %}
+
+            <tr>
+                <td colspan="8" class="empty">
+                    No purchase records available.
+                </td>
+            </tr>
+
+            {% endfor %}
+
+        </tbody>
+    </table>
+
+</div>
+
+</body>
+</html>

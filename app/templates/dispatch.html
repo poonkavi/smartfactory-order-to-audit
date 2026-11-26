@@ -1,0 +1,223 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dispatch Management</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background: #f4f6f9;
+        }
+
+        h1 {
+            color: #2c3e50;
+        }
+
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+
+        th {
+            background: #2c3e50;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 8px 14px;
+            background: #2980b9;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        .btn:hover {
+            background: #1f6391;
+        }
+
+        .status {
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .pending {
+            background: #ffe0b2;
+            color: #8a4b08;
+        }
+
+        .approved {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .partial {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .dispatched {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+        }
+
+        .nav {
+            margin-bottom: 20px;
+        }
+
+        .nav a {
+            margin-right: 15px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Dispatch Management</h1>
+
+    <div class="nav">
+        <a href="/dispatch" class="btn">Dispatch Dashboard</a>
+        <a href="/dispatch/history" class="btn">Dispatch History</a>
+        <a href="/" class="btn">Home</a>
+    </div>
+
+    {% if order_rows %}
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Order Number</th>
+                    <th>Customer</th>
+                    <th>State</th>
+                    <th>Order Date</th>
+                    <th>Status</th>
+                    <th>Products & Quantities</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for row in order_rows %}
+
+                    <tr>
+                        <td>
+                            {{ row["order"].order_number }}
+                        </td>
+
+                        <td>
+                            {{ row["order"].customer_name }}
+                        </td>
+
+                        <td>
+                            {{ row["order"].customer_state }}
+                        </td>
+
+                        <td>
+                            {{ row["order"].order_date.strftime('%d-%m-%Y') if row["order"].order_date else '-' }}
+                        </td>
+
+                        <td>
+                            {{ row["order"].status }}
+                        </td>
+
+                        <td>
+                            {% for item_row in row["items"] %}
+
+                                <div style="margin-bottom: 10px;">
+                                    <strong>
+                                        {{ item_row["product"].name }}
+                                    </strong>
+
+                                    <br>
+
+                                    Ordered:
+                                    {{ item_row["item"].quantity }}
+
+                                    <br>
+
+                                    Dispatched:
+                                    {{ item_row["item"].dispatched_quantity }}
+
+                                    <br>
+
+                                    Remaining:
+                                    {{ item_row["remaining"] }}
+
+                                    <br>
+
+                                    Available Stock:
+                                    {{ item_row["available_stock"] }}
+                                </div>
+
+                            {% endfor %}
+                        </td>
+
+                        <td>
+                            {% if row["order"].status != "Pending" and row["items"] %}
+
+                                <a href="{{ url_for('dispatch.process_dispatch', order_id=row['order'].id) }}"
+                                   class="btn">
+                                    Process Dispatch
+                                </a>
+
+                            {% else %}
+
+                                <span style="color: gray;">
+                                    {% if row["order"].status == "Pending" %}
+                                        Awaiting Approval
+                                    {% else %}
+                                        No Items Remaining
+                                    {% endif %}
+                                </span>
+
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+        </table>
+
+    {% else %}
+
+        <div class="empty">
+            <h3>No orders available for dispatch</h3>
+            <p>Approved orders will appear here when they are ready for dispatch.</p>
+        </div>
+
+    {% endif %}
+
+</div>
+
+</body>
+</html>

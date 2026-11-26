@@ -1,0 +1,338 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SmartFactory Main Dashboard</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
+        }
+
+        .header {
+            background: #1e293b;
+            color: white;
+            padding: 25px 35px;
+        }
+
+        .header h1 {
+            margin: 0;
+        }
+
+        .header p {
+            color: #cbd5e1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: auto;
+            padding: 25px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+        }
+
+        .card {
+            background: white;
+            padding: 22px;
+            border-radius: 12px;
+            border-left: 5px solid #64748b;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+
+        .card h3 {
+            color: #64748b;
+            font-size: 15px;
+            margin-top: 0;
+        }
+
+        .value {
+            font-size: 28px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .blue {
+            border-left-color: #2563eb;
+        }
+
+        .green {
+            border-left-color: #16a34a;
+        }
+
+        .orange {
+            border-left-color: #ea580c;
+        }
+
+        .red {
+            border-left-color: #dc2626;
+        }
+
+        .purple {
+            border-left-color: #7c3aed;
+        }
+
+        .section {
+            margin-top: 35px;
+        }
+
+        .section h2 {
+            margin-bottom: 18px;
+        }
+
+        .links {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+        }
+
+        .links a {
+            display: block;
+            text-decoration: none;
+            background: #334155;
+            color: white;
+            padding: 18px;
+            border-radius: 8px;
+            text-align: center;
+            transition: 0.2s;
+        }
+
+        .links a:hover {
+            background: #475569;
+            transform: translateY(-2px);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 13px;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: left;
+        }
+
+        th {
+            background: #334155;
+            color: white;
+        }
+
+        tr:hover {
+            background: #f8fafc;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            background: #e2e8f0;
+            font-size: 12px;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 25px;
+            color: #64748b;
+        }
+
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #64748b;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            table {
+                font-size: 12px;
+            }
+
+            th, td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="header">
+    <h1>SmartFactory</h1>
+    <p>Manufacturing & Distribution Management System</p>
+</div>
+
+<div class="container">
+
+    <h2>Business Overview</h2>
+
+    <div class="cards">
+
+        <div class="card blue">
+            <h3>Total Products</h3>
+            <div class="value">{{ total_products }}</div>
+        </div>
+
+        <div class="card purple">
+            <h3>Inventory Items</h3>
+            <div class="value">{{ total_inventory_items }}</div>
+        </div>
+
+        <div class="card blue">
+            <h3>Total Orders</h3>
+            <div class="value">{{ total_orders }}</div>
+        </div>
+
+        <div class="card orange">
+            <h3>Pending Orders</h3>
+            <div class="value">{{ pending_orders }}</div>
+        </div>
+
+        <div class="card green">
+            <h3>Approved Orders</h3>
+            <div class="value">{{ approved_orders }}</div>
+        </div>
+
+        <div class="card red">
+            <h3>Rejected Orders</h3>
+            <div class="value">{{ rejected_orders }}</div>
+        </div>
+
+        <div class="card green">
+            <h3>Total Sales Value</h3>
+            <div class="value">₹{{ "%.2f"|format(total_sales) }}</div>
+        </div>
+
+        <div class="card purple">
+            <h3>Production Batches</h3>
+            <div class="value">{{ total_production_batches }}</div>
+        </div>
+
+        <div class="card blue">
+            <h3>Total Invoices</h3>
+            <div class="value">{{ total_invoices }}</div>
+        </div>
+
+        <div class="card green">
+            <h3>Payments Received</h3>
+            <div class="value">₹{{ "%.2f"|format(total_payments_received) }}</div>
+        </div>
+
+        <div class="card red">
+            <h3>Outstanding Amount</h3>
+            <div class="value">₹{{ "%.2f"|format(total_outstanding) }}</div>
+        </div>
+
+    </div>
+
+
+    <div class="section">
+
+        <h2>Quick Access</h2>
+
+        <div class="links">
+
+            <a href="/salesman/new-order">Salesman / Create Order</a>
+
+            <a href="/admin/orders">Admin Order Approval</a>
+
+            <a href="/purchases">Purchase Management</a>
+
+            <a href="/production">Production Management</a>
+
+            <a href="/dispatch">Dispatch Management</a>
+
+            <a href="/invoices">Invoice Management</a>
+
+            <a href="/payments">Payment Management</a>
+
+            <a href="/reports">Reports & Analytics</a>
+
+        </div>
+
+    </div>
+
+
+    <div class="section">
+
+        <h2>Recent Orders</h2>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Order Number</th>
+                    <th>Customer</th>
+                    <th>Salesman ID</th>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for order in recent_orders %}
+
+                <tr>
+                    <td>{{ order.order_number }}</td>
+
+                    <td>{{ order.customer_name }}</td>
+
+                    <td>{{ order.salesman_id }}</td>
+
+                    <td>
+                        {{ order.order_date.strftime('%d-%m-%Y') if order.order_date else '-' }}
+                    </td>
+
+                    <td>₹{{ "%.2f"|format(order.total_amount) }}</td>
+
+                    <td>
+                        <span class="status">{{ order.status }}</span>
+                    </td>
+                </tr>
+
+                {% else %}
+
+                <tr>
+                    <td colspan="6" class="empty">
+                        No orders available.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    <div class="footer">
+        SmartFactory Order-to-Audit System
+    </div>
+
+</div>
+
+</body>
+</html>

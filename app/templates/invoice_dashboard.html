@@ -1,0 +1,196 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Dashboard</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background: #f4f6f9;
+            color: #333;
+        }
+
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            color: #2c3e50;
+        }
+
+        .nav {
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 9px 14px;
+            background: #2980b9;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-right: 5px;
+        }
+
+        .btn:hover {
+            background: #1f6391;
+        }
+
+        .generate {
+            background: #27ae60;
+        }
+
+        .generate:hover {
+            background: #1e8449;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #2c3e50;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .message {
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+        }
+
+        .product-line {
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Invoice Dashboard</h1>
+
+    <div class="nav">
+        <a href="/invoices" class="btn">Invoice Dashboard</a>
+        <a href="/invoices/history" class="btn">Invoice History</a>
+        <a href="/" class="btn">Home</a>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="message">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endwith %}
+
+    {% if orders %}
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Order Number</th>
+                    <th>Customer</th>
+                    <th>State</th>
+                    <th>Order Date</th>
+                    <th>Status</th>
+                    <th>Products</th>
+                    <th>Order Amount</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for row in orders %}
+                    <tr>
+
+                        <td>
+                            {{ row["order"].order_number }}
+                        </td>
+
+                        <td>
+                            {{ row["order"].customer_name }}
+                        </td>
+
+                        <td>
+                            {{ row["order"].customer_state }}
+                        </td>
+
+                        <td>
+                            {{ row["order"].order_date.strftime('%d-%m-%Y') if row["order"].order_date else '-' }}
+                        </td>
+
+                        <td>
+                            {{ row["order"].status }}
+                        </td>
+
+                        <td>
+                            {% for item_row in row["items"] %}
+                                <div class="product-line">
+                                    <strong>{{ item_row["product"].name }}</strong><br>
+                                    Quantity: {{ item_row["item"].quantity }}<br>
+                                    Unit Price: ₹{{ item_row["item"].unit_price }}<br>
+                                    Line Total: ₹{{ item_row["item"].line_total }}
+                                </div>
+                            {% endfor %}
+                        </td>
+
+                        <td>
+                            ₹{{ row["order"].total_amount }}
+                        </td>
+
+                        <td>
+                            <a class="btn generate"
+                               href="{{ url_for('invoices.generate_order_invoice', order_id=row['order'].id) }}"
+                               onclick="return confirm('Generate invoice for this order?');">
+                                Generate Invoice
+                            </a>
+                        </td>
+
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    {% else %}
+
+        <div class="empty">
+            <h3>No orders available for invoicing</h3>
+            <p>Orders that are eligible for invoice generation will appear here.</p>
+        </div>
+
+    {% endif %}
+
+</div>
+
+</body>
+</html>

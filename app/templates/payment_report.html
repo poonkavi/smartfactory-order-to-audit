@@ -1,0 +1,77 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment Report</title>
+    <style>
+        body { font-family: Arial; background: #f4f6f9; padding: 25px; }
+        .container { max-width: 1200px; margin: auto; }
+        .cards { display: flex; flex-wrap: wrap; gap: 15px; margin: 20px 0; }
+        .card { background: white; padding: 20px; flex: 1; min-width: 200px; border-radius: 10px; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background: #334155; color: white; }
+        a, button { background: #334155; color: white; padding: 10px 14px; text-decoration: none; border: 0; border-radius: 5px; cursor: pointer; display: inline-block; margin-bottom: 15px; }
+        .empty { text-align: center; padding: 20px; }
+        @media print { button, .nav { display: none; } body { background: white; } }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <h1>Payment Report</h1>
+    <p>SmartFactory - Payment Collection Analysis</p>
+
+    <div class="nav">
+        <a href="{{ url_for('reports.reports_dashboard') }}">Reports Dashboard</a>
+        <a href="{{ url_for('reports.outstanding_report') }}">Outstanding Report</a>
+    </div>
+
+    <button onclick="window.print()">Print / Save PDF</button>
+
+    <div class="cards">
+        <div class="card">
+            <h3>Total Payment Transactions</h3>
+            <h2>{{ total_payment_count }}</h2>
+        </div>
+
+        <div class="card">
+            <h3>Total Amount Received</h3>
+            <h2>₹{{ "%.2f"|format(total_received) }}</h2>
+        </div>
+    </div>
+
+    <h2>Payment Transactions</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Invoice ID</th>
+                <th>Payment Amount</th>
+                <th>Payment Method</th>
+                <th>Reference Number</th>
+                <th>Payment Date</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for payment in payments %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ payment.invoice_id }}</td>
+                <td>₹{{ "%.2f"|format(payment.amount) }}</td>
+                <td>{{ payment.payment_method }}</td>
+                <td>{{ payment.reference_number or '-' }}</td>
+                <td>{{ payment.payment_date.strftime('%d-%m-%Y') if payment.payment_date else '-' }}</td>
+            </tr>
+        {% else %}
+            <tr><td colspan="6" class="empty">No payment records found.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+</body>
+</html>
+

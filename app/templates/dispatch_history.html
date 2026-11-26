@@ -1,0 +1,117 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dispatch History</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 30px;
+        }
+
+        h1 {
+            color: #26364a;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px #ddd;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #e9eef5;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 16px;
+            background: #2563eb;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>Dispatch History</h1>
+
+<a class="btn"
+   href="{{ url_for('dispatch.dispatch_dashboard') }}">
+    Back to Dispatch Dashboard
+</a>
+
+<br><br>
+
+<div class="card">
+
+    {% if dispatch_rows %}
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Dispatch No.</th>
+                    <th>Order No.</th>
+                    <th>Customer</th>
+                    <th>Product</th>
+                    <th>Quantity</th>
+                    <th>Date</th>
+                    <th>Notes</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for row in dispatch_rows %}
+
+                <tr>
+                    <td>{{ row.dispatch.dispatch_number }}</td>
+
+                    <td>{{ row.order.order_number }}</td>
+
+                    <td>{{ row.order.customer_name }}</td>
+
+                    <td>{{ row.product.name }}</td>
+
+                    <td>{{ row.dispatch.quantity }}</td>
+
+                    <td>
+                        {{ row.dispatch.dispatch_date.strftime("%d-%m-%Y %H:%M") }}
+                    </td>
+
+                    <td>{{ row.dispatch.notes or "-" }}</td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    {% else %}
+
+        <p>No dispatch records found.</p>
+
+    {% endif %}
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,224 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Order Approval</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 30px;
+            color: #333;
+        }
+
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            color: #2c3e50;
+        }
+
+        .nav {
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            border: none;
+            padding: 9px 14px;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: inline-block;
+        }
+
+        .blue {
+            background: #2980b9;
+        }
+
+        .green {
+            background: #27ae60;
+        }
+
+        .red {
+            background: #c0392b;
+        }
+
+        .message {
+            padding: 12px;
+            background: #d4edda;
+            color: #155724;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        th {
+            background: #2c3e50;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .item {
+            margin-bottom: 8px;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+           }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Admin - Order Approval</h1>
+
+    <div class="nav">
+        <a href="/admin/orders" class="btn blue">Order Approval</a>
+        <a href="/admin/products" class="btn blue">Product Management</a>
+        <a href="/" class="btn blue">Home</a>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="message">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    {% if order_rows %}
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Order Number</th>
+                    <th>Customer</th>
+                    <th>State</th>
+                    <th>Order Date</th>
+                    <th>Products</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for row in order_rows %}
+
+                    <tr>
+                        <td>{{ row["order"].order_number }}</td>
+
+                        <td>{{ row["order"].customer_name }}</td>
+
+                        <td>{{ row["order"].customer_state }}</td>
+
+                        <td>
+                            {{ row["order"].order_date.strftime('%d-%m-%Y') if row["order"].order_date else "-" }}
+                        </td>
+
+                        <td>
+                            {% for item_row in row["items"] %}
+                                <div class="item">
+                                    <strong>
+                                        {{ item_row["product"].name if item_row["product"] else "Unknown Product" }}
+                                    </strong>
+                                    <br>
+                                    Quantity: {{ item_row["item"].quantity }}
+                                    <br>
+                                    Unit Price: ₹{{ item_row["item"].unit_price }}
+                                </div>
+                            {% endfor %}
+                        </td>
+
+                        <td>
+                            ₹{{ row["order"].total_amount }}
+                        </td>
+
+                        <td>
+                            <strong>{{ row["order"].status }}</strong>
+                        </td>
+
+                        <td>
+
+                            {% if row["order"].status == "Pending" %}
+
+                                <div class="actions">
+
+                                    <form method="POST"
+                                          action="{{ url_for('admin.approve_order', order_id=row['order'].id) }}"
+                                          onsubmit="return confirm('Approve this order?');">
+
+                                        <button type="submit" class="btn green">
+                                            Approve
+                                        </button>
+                                    </form>
+
+                                    <form method="POST"
+                                          action="{{ url_for('admin.reject_order', order_id=row['order'].id) }}"
+                                          onsubmit="return confirm('Reject this order?');">
+
+                                        <button type="submit" class="btn red">
+                                            Reject
+                                        </button>
+                                    </form>
+
+                                </div>
+
+                            {% else %}
+
+                                <span>No action required</span>
+
+                            {% endif %}
+
+                        </td>
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+        </table>
+
+    {% else %}
+
+        <div class="empty">
+            <h3>No orders found</h3>
+        </div>
+
+    {% endif %}
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Create Sales Order - SmartFactory</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+<div class="container mt-5 mb-5">
+
+    <!-- Header -->
+    <div class="mb-4">
+        <h2>SmartFactory - Sales Order</h2>
+        <p class="text-muted">
+            Create and manage customer sales orders
+        </p>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show">
+                {{ message }}
+                <button type="button" class="btn-close"
+                        data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endwith %}
+
+    <!-- Order Form -->
+    <div class="card shadow-sm">
+
+        <div class="card-header bg-primary text-white">
+            <h5 class="mb-0">Create New Order</h5>
+        </div>
+
+        <div class="card-body">
+
+            <form method="POST"
+                  action="{{ url_for('salesman.new_order') }}">
+
+                <!-- Salesman -->
+                <div class="mb-3">
+                    <label class="form-label">Salesman</label>
+
+                    <select name="salesman_id"
+                            class="form-select"
+                            required>
+
+                        <option value="">Select Salesman</option>
+
+                        {% for salesman in salesmen %}
+                            <option value="{{ salesman.id }}">
+                                {{ salesman.name }}
+                            </option>
+                        {% endfor %}
+
+                    </select>
+                </div>
+
+                <!-- Customer Name -->
+                <div class="mb-3">
+                    <label class="form-label">Customer Name</label>
+
+                    <input type="text"
+                           name="customer_name"
+                           class="form-control"
+                           placeholder="Enter customer name"
+                           required>
+                </div>
+
+                <!-- Customer State -->
+                <div class="mb-3">
+                    <label class="form-label">Customer State</label>
+
+                    <select name="customer_state"
+                            class="form-select"
+                            required>
+
+                        <option value="">Select State</option>
+
+                        <option value="Tamil Nadu">Tamil Nadu</option>
+                        <option value="Kerala">Kerala</option>
+                        <option value="Karnataka">Karnataka</option>
+                        <option value="Andhra Pradesh">Andhra Pradesh</option>
+                        <option value="Telangana">Telangana</option>
+                        <option value="Maharashtra">Maharashtra</option>
+                        <option value="Delhi">Delhi</option>
+                        <option value="Other">Other</option>
+
+                    </select>
+                </div>
+
+                <!-- Product -->
+                <div class="mb-3">
+                    <label class="form-label">Product</label>
+
+                    <select name="product_sku"
+                            class="form-select"
+                            required>
+
+                        <option value="">Select Product</option>
+
+                        {% for product in products %}
+                            <option value="{{ product.sku }}">
+                                {{ product.name }} -
+                                ₹{{ product.selling_price }}
+                                / {{ product.unit }}
+                            </option>
+                        {% endfor %}
+
+                    </select>
+                </div>
+
+                <!-- Quantity -->
+                <div class="mb-3">
+                    <label class="form-label">Quantity</label>
+
+                    <input type="number"
+                           name="quantity"
+                           class="form-control"
+                           min="1"
+                           placeholder="Enter quantity"
+                           required>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" class="btn btn-primary">
+                    Create Order
+                </button>
+
+                <a href="{{ url_for('salesman.order_history') }}"
+                   class="btn btn-outline-secondary">
+                    View Order History
+                </a>
+
+            </form>
+
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="mt-4">
+
+        <a href="{{ url_for('admin.products') }}"
+           class="btn btn-outline-dark">
+            Product Management
+        </a>
+
+        <a href="{{ url_for('salesman.order_history') }}"
+           class="btn btn-outline-primary">
+            Order History
+        </a>
+
+    </div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,471 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GST Invoice - {{ invoice.invoice_number }}</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f1f4f8;
+            margin: 0;
+            padding: 25px;
+            color: #222;
+        }
+
+        .invoice {
+            max-width: 1100px;
+            margin: auto;
+            background: white;
+            padding: 35px;
+            border: 1px solid #d5dce5;
+        }
+
+        .top-actions {
+            max-width: 1100px;
+            margin: 0 auto 15px;
+            text-align: right;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #155e9b;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            cursor: pointer;
+            margin-left: 5px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            border-bottom: 3px solid #173c68;
+            padding-bottom: 20px;
+        }
+
+        .company h1 {
+            color: #173c68;
+            font-size: 30px;
+            margin: 0 0 10px;
+        }
+
+        .company p {
+            margin: 5px 0;
+        }
+
+        .invoice-info {
+            background: #edf4fc;
+            border: 1px solid #b9d2ed;
+            padding: 15px;
+            min-width: 240px;
+            border-radius: 6px;
+        }
+
+        .invoice-info p {
+            margin: 8px 0;
+        }
+
+        .invoice-title {
+            text-align: center;
+            margin: 25px 0;
+        }
+
+        .invoice-title h2 {
+            background: #173c68;
+            color: white;
+            display: inline-block;
+            padding: 12px 45px;
+            border-radius: 6px;
+            margin: 0;
+        }
+
+        .customer-section {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .customer-box {
+            flex: 1;
+            border: 1px solid #b9cde0;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .customer-box h3 {
+            background: #173c68;
+            color: white;
+            margin: 0;
+            padding: 10px;
+        }
+
+        .customer-box .content {
+            padding: 12px;
+            min-height: 80px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            border: 1px solid #bfc9d5;
+            padding: 10px;
+            text-align: center;
+        }
+
+        th {
+            background: #173c68;
+            color: white;
+        }
+
+        td.product-name {
+            text-align: left;
+        }
+
+        .summary-section {
+            display: flex;
+            justify-content: space-between;
+            gap: 25px;
+            margin-top: 25px;
+            align-items: flex-start;
+        }
+
+        .gst-summary {
+            flex: 1;
+        }
+
+        .total-box {
+            min-width: 300px;
+            border: 1px solid #b9d2ed;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .total-box table {
+            margin: 0;
+        }
+
+        .total-box td {
+            text-align: left;
+            padding: 12px;
+            background: #edf4fc;
+        }
+
+        .grand-total td {
+            background: #173c68;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .footer {
+            margin-top: 35px;
+            border-top: 2px solid #173c68;
+            padding-top: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .signature {
+            text-align: center;
+            margin-top: 35px;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .invoice {
+                border: none;
+                padding: 10px;
+                max-width: none;
+            }
+
+            .top-actions {
+                display: none;
+            }
+
+            @page {
+                size: A4 landscape;
+                margin: 10mm;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="top-actions">
+    <button class="btn" onclick="window.print()">Print / Save as PDF</button>
+    <a href="{{ url_for('invoices.invoice_history') }}" class="btn">
+        Back to Invoice History
+    </a>
+</div>
+
+<div class="invoice">
+
+    <!-- Company Header -->
+    <div class="header">
+
+        <div class="company">
+            <h1>SmartFactory</h1>
+            <p><strong>Manufacturing & Distribution</strong></p>
+            <p>Company Address: Update with your company address</p>
+            <p>State: Tamil Nadu, India</p>
+            <p>GSTIN: Update with your GSTIN</p>
+        </div>
+
+        <div class="invoice-info">
+            <p><strong>Invoice No:</strong> {{ invoice.invoice_number }}</p>
+
+            <p>
+                <strong>Invoice Date:</strong>
+                {{ invoice.invoice_date.strftime('%d-%m-%Y') if invoice.invoice_date else '-' }}
+            </p>
+
+            <p><strong>Order No:</strong> {{ order.order_number }}</p>
+
+            <p><strong>Status:</strong>
+                <span class="status">{{ invoice.status }}</span>
+            </p>
+        </div>
+
+    </div>
+
+    <div class="invoice-title">
+        <h2>TAX INVOICE (GST)</h2>
+    </div>
+
+    <!-- Customer details -->
+    <div class="customer-section">
+
+        <div class="customer-box">
+            <h3>Billed To</h3>
+
+            <div class="content">
+                <strong>{{ order.customer_name }}</strong>
+                <br>
+                State: {{ order.customer_state }}
+            </div>
+        </div>
+
+        <div class="customer-box">
+            <h3>Place of Supply</h3>
+
+            <div class="content">
+                {{ order.customer_state }}
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Product table -->
+    <table>
+
+        <thead>
+            <tr>
+                <th>S.No</th>
+                <th>Product</th>
+                <th>SKU</th>
+                <th>Quantity</th>
+                <th>Unit Price (₹)</th>
+                <th>Taxable Amount (₹)</th>
+                <th>GST Rate</th>
+                <th>GST Amount (₹)</th>
+                <th>Total (₹)</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for row in item_rows %}
+
+                {% set item = row["item"] %}
+                {% set product = row["product"] %}
+                {% set taxable = item.line_total|float %}
+                {% set gst_rate = product.gst_rate|float %}
+                {% set gst_amount = taxable * gst_rate / 100 %}
+                {% set item_total = taxable + gst_amount %}
+
+                <tr>
+                    <td>{{ loop.index }}</td>
+
+                    <td class="product-name">
+                        {{ product.name }}
+                    </td>
+
+                    <td>{{ product.sku }}</td>
+
+                    <td>{{ item.quantity }}</td>
+
+                    <td>
+                        {{ "%.2f"|format(item.unit_price|float) }}
+                    </td>
+
+                    <td>
+                        {{ "%.2f"|format(taxable) }}
+                    </td>
+
+                    <td>
+                        {{ "%.2f"|format(gst_rate) }}%
+                    </td>
+
+                    <td>
+                        {{ "%.2f"|format(gst_amount) }}
+                    </td>
+
+                    <td>
+                        {{ "%.2f"|format(item_total) }}
+                    </td>
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+    <!-- GST Summary and Total -->
+    <div class="summary-section">
+
+        <div class="gst-summary">
+
+            <h3>GST Summary</h3>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tax Type</th>
+                        <th>Taxable Amount (₹)</th>
+                        <th>Tax Amount (₹)</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% if invoice.igst|float > 0 %}
+
+                        <tr>
+                            <td>IGST</td>
+                            <td>
+                                {{ "%.2f"|format(invoice.taxable_amount|float) }}
+                            </td>
+                            <td>
+                                {{ "%.2f"|format(invoice.igst|float) }}
+                            </td>
+                        </tr>
+
+                    {% else %}
+
+                        <tr>
+                            <td>CGST</td>
+                            <td>
+                                {{ "%.2f"|format(invoice.taxable_amount|float) }}
+                            </td>
+                            <td>
+                                {{ "%.2f"|format(invoice.cgst|float) }}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>SGST</td>
+                            <td>
+                                {{ "%.2f"|format(invoice.taxable_amount|float) }}
+                            </td>
+                            <td>
+                                {{ "%.2f"|format(invoice.sgst|float) }}
+                            </td>
+                        </tr>
+
+                    {% endif %}
+
+                </tbody>
+            </table>
+
+        </div>
+
+        <div class="total-box">
+
+            <table>
+                <tr>
+                    <td>Taxable Amount</td>
+                    <td>
+                        ₹{{ "%.2f"|format(invoice.taxable_amount|float) }}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Total CGST</td>
+                    <td>
+                        ₹{{ "%.2f"|format(invoice.cgst|float) }}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Total SGST</td>
+                    <td>
+                        ₹{{ "%.2f"|format(invoice.sgst|float) }}
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>Total IGST</td>
+                    <td>
+                        ₹{{ "%.2f"|format(invoice.igst|float) }}
+                    </td>
+                </tr>
+
+                <tr class="grand-total">
+                    <td>Grand Total</td>
+                    <td>
+                        ₹{{ "%.2f"|format(invoice.total_amount|float) }}
+                    </td>
+                </tr>
+            </table>
+
+        </div>
+
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+
+        <div>
+            <strong>Terms & Conditions</strong>
+            <p>1. Goods once sold are subject to company policy.</p>
+            <p>2. Please retain this invoice for your records.</p>
+        </div>
+
+        <div class="signature">
+            <strong>For SmartFactory</strong>
+            <br><br><br>
+            __________________________
+            <br>
+            Authorised Signature
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>

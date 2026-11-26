@@ -1,0 +1,105 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Production Report</title>
+    <style>
+        body { font-family: Arial; background: #f4f6f9; padding: 25px; }
+        .container { max-width: 1300px; margin: auto; }
+        .cards { display: flex; flex-wrap: wrap; gap: 15px; margin: 20px 0; }
+        .card { background: white; padding: 20px; flex: 1; min-width: 180px; border-radius: 10px; }
+        table { width: 100%; border-collapse: collapse; background: white; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background: #334155; color: white; }
+        a, button { background: #334155; color: white; padding: 10px 14px; text-decoration: none; border: 0; border-radius: 5px; cursor: pointer; display: inline-block; margin-bottom: 15px; }
+        .empty { text-align: center; padding: 20px; }
+        @media print { button, .nav { display: none; } body { background: white; } }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <h1>Production Report</h1>
+    <p>SmartFactory - Manufacturing Analysis</p>
+
+    <div class="nav">
+        <a href="{{ url_for('reports.reports_dashboard') }}">Reports Dashboard</a>
+        <a href="{{ url_for('reports.purchase_report') }}">Purchase Report</a>
+        <a href="{{ url_for('reports.dispatch_report') }}">Dispatch Report</a>
+    </div>
+
+    <button onclick="window.print()">Print / Save PDF</button>
+
+    <div class="cards">
+        <div class="card">
+            <h3>Total Batches</h3>
+            <h2>{{ total_batches }}</h2>
+        </div>
+
+        <div class="card">
+            <h3>Planned Production</h3>
+            <h2>{{ total_planned }}</h2>
+        </div>
+
+        <div class="card">
+            <h3>Actual Production</h3>
+            <h2>{{ total_actual }}</h2>
+        </div>
+
+        <div class="card">
+            <h3>Rejected Quantity</h3>
+            <h2>{{ total_rejected }}</h2>
+        </div>
+
+        <div class="card">
+            <h3>Damaged Packaging</h3>
+            <h2>{{ total_damaged_packaging }}</h2>
+        </div>
+
+        <div class="card">
+            <h3>Production Achievement</h3>
+            <h2>{{ overall_achievement }}%</h2>
+        </div>
+    </div>
+
+    <h2>Production Batch History</h2>
+
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Batch Number</th>
+                <th>Product</th>
+                <th>Planned</th>
+                <th>Actual</th>
+                <th>Rejected</th>
+                <th>Damaged Packaging</th>
+                <th>Achievement</th>
+                <th>Status</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+
+        <tbody>
+        {% for row in production_rows %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ row.batch.batch_number }}</td>
+                <td>{{ row.product.name if row.product else 'Unknown Product' }}</td>
+                <td>{{ row.batch.planned_output }}</td>
+                <td>{{ row.batch.actual_output }}</td>
+                <td>{{ row.batch.rejected_quantity }}</td>
+                <td>{{ row.batch.damaged_packaging_quantity }}</td>
+                <td>{{ row.achievement }}%</td>
+                <td>{{ row.batch.status }}</td>
+                <td>{{ row.batch.production_date.strftime('%d-%m-%Y') if row.batch.production_date else '-' }}</td>
+            </tr>
+        {% else %}
+            <tr><td colspan="10" class="empty">No production batches found.</td></tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+</div>
+</body>
+</html>

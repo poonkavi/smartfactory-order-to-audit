@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Order History - SmartFactory</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+<div class="container mt-4 mb-5">
+
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2>Order History</h2>
+            <p class="text-muted">View all sales orders</p>
+        </div>
+
+        <a href="{{ url_for('salesman.new_order') }}"
+           class="btn btn-primary">
+            + Create New Order
+        </a>
+    </div>
+
+    <!-- Orders Table -->
+    <div class="card shadow-sm">
+
+        <div class="card-header bg-dark text-white">
+            All Sales Orders
+        </div>
+
+        <div class="card-body table-responsive">
+
+            <table class="table table-bordered table-hover align-middle">
+
+                <thead class="table-secondary">
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Order Number</th>
+                        <th>Customer</th>
+                        <th>State</th>
+                        <th>Salesman ID</th>
+                        <th>Order Date</th>
+                        <th>Amount (₹)</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for order in orders %}
+
+                    <tr>
+                        <td>{{ order.id }}</td>
+
+                        <td>{{ order.order_number }}</td>
+
+                        <td>{{ order.customer_name }}</td>
+
+                        <td>{{ order.customer_state }}</td>
+
+                        <td>{{ order.salesman_id }}</td>
+
+                        <td>
+                            {% if order.order_date %}
+                                {{ order.order_date.strftime('%d-%m-%Y %H:%M') }}
+                            {% else %}
+                                -
+                            {% endif %}
+                        </td>
+
+                        <td>₹{{ "%.2f"|format(order.total_amount|float) }}</td>
+
+                        <td>
+                            {% if order.status == "Pending" %}
+                                <span class="badge bg-warning text-dark">
+                                    Pending
+                                </span>
+                            {% elif order.status == "Approved" %}
+                                <span class="badge bg-success">
+                                    Approved
+                                </span>
+                            {% elif order.status == "Rejected" %}
+                                <span class="badge bg-danger">
+                                    Rejected
+                                </span>
+                            {% elif order.status == "Dispatched" %}
+                                <span class="badge bg-primary">
+                                    Dispatched
+                                </span>
+                            {% else %}
+                                <span class="badge bg-secondary">
+                                    {{ order.status }}
+                                </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+
+                    {% else %}
+
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-4">
+                            No orders found yet.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <div class="mt-3">
+        <a href="{{ url_for('admin.products') }}"
+           class="btn btn-outline-secondary">
+            Product Management
+        </a>
+
+        <a href="{{ url_for('salesman.new_order') }}"
+           class="btn btn-outline-primary">
+            Sales Order
+        </a>
+    </div>
+
+</div>
+
+</body>
+</html>

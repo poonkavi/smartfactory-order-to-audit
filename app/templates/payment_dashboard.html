@@ -1,0 +1,198 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Payment Management</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 30px;
+        }
+
+        h1 {
+            color: #222;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .nav {
+            margin-bottom: 20px;
+        }
+
+        .nav a {
+            display: inline-block;
+            padding: 10px 15px;
+            margin-right: 10px;
+            background: #1f4e79;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #1f4e79;
+            color: white;
+        }
+
+        .paid {
+            color: green;
+            font-weight: bold;
+        }
+
+        .partial {
+            color: orange;
+            font-weight: bold;
+        }
+
+        .unpaid {
+            color: red;
+            font-weight: bold;
+        }
+
+        .btn {
+            padding: 7px 12px;
+            background: #198754;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        .messages {
+            margin: 15px 0;
+        }
+
+        .messages div {
+            padding: 10px;
+            background: #e8f5e9;
+            margin-bottom: 5px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Payment Management</h1>
+
+    <div class="nav">
+        <a href="{{ url_for('payments.payment_dashboard') }}">Dashboard</a>
+        <a href="{{ url_for('payments.payment_history') }}">Payment History</a>
+        <a href="{{ url_for('payments.outstanding_payments') }}">Outstanding Payments</a>
+        <a href="{{ url_for('invoices.invoice_history') }}">Invoice History</a>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="messages">
+                {% for category, message in messages %}
+                    <div>{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <table>
+
+        <thead>
+            <tr>
+                <th>Invoice No</th>
+                <th>Order No</th>
+                <th>Customer</th>
+                <th>Invoice Amount</th>
+                <th>Paid Amount</th>
+                <th>Balance</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            {% for row in invoice_rows %}
+
+                <tr>
+
+                    <td>{{ row.invoice.invoice_number }}</td>
+
+                    <td>
+                        {% if row.order %}
+                            {{ row.order.order_number }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if row.order %}
+                            {{ row.order.customer_name }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+
+                    <td>₹{{ "%.2f"|format(row.invoice.total_amount) }}</td>
+
+                    <td>₹{{ "%.2f"|format(row.total_paid) }}</td>
+
+                    <td>₹{{ "%.2f"|format(row.balance) }}</td>
+
+                    <td>
+                        {% if row.invoice.status == "Paid" %}
+                            <span class="paid">Paid</span>
+                        {% elif row.invoice.status == "Partially Paid" %}
+                            <span class="partial">Partially Paid</span>
+                        {% else %}
+                            <span class="unpaid">{{ row.invoice.status }}</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if row.balance > 0 %}
+                            <a class="btn"
+                               href="{{ url_for('payments.record_invoice_payment', invoice_id=row.invoice.id) }}">
+                                Receive Payment
+                            </a>
+                        {% else %}
+                            Completed
+                        {% endif %}
+                    </td>
+
+                </tr>
+
+            {% else %}
+
+                <tr>
+                    <td colspan="8">No invoices found.</td>
+                </tr>
+
+            {% endfor %}
+
+        </tbody>
+
+    </table>
+
+</div>
+
+</body>
+</html>

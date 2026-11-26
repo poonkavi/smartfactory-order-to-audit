@@ -1,0 +1,184 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice History</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 30px;
+            background: #f4f6f9;
+            color: #333;
+        }
+
+        .container {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        h1 {
+            color: #2c3e50;
+        }
+
+        .nav {
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 9px 14px;
+            background: #2980b9;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-right: 5px;
+        }
+
+        .btn:hover {
+            background: #1f6391;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background: #2c3e50;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f9f9f9;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 5px;
+            background: #fff3cd;
+            color: #856404;
+            font-weight: bold;
+        }
+
+        .paid {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>Invoice History</h1>
+
+    <div class="nav">
+        <a href="/invoices" class="btn">Invoice Dashboard</a>
+        <a href="/invoices/history" class="btn">Invoice History</a>
+        <a href="/" class="btn">Home</a>
+    </div>
+
+    {% if invoice_rows %}
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Invoice Number</th>
+                    <th>Order Number</th>
+                    <th>Customer</th>
+                    <th>Invoice Date</th>
+                    <th>Taxable Amount</th>
+                    <th>GST</th>
+                    <th>Total Amount</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for row in invoice_rows %}
+                    <tr>
+                        <td>{{ row["invoice"].invoice_number }}</td>
+
+                        <td>
+                            {{ row["order"].order_number if row["order"] else "-" }}
+                        </td>
+
+                        <td>
+                            {{ row["order"].customer_name if row["order"] else "-" }}
+                        </td>
+
+                        <td>
+                            {{ row["invoice"].invoice_date.strftime('%d-%m-%Y') if row["invoice"].invoice_date else "-" }}
+                        </td>
+
+                        <td>
+                            ₹{{ "%.2f"|format(row["invoice"].taxable_amount|float) }}
+                        </td>
+
+                        <td>
+                            ₹{{ "%.2f"|format((row["invoice"].cgst|float) + (row["invoice"].sgst|float) + (row["invoice"].igst|float)) }}
+                        </td>
+
+                        <td>
+                            <strong>
+                                ₹{{ "%.2f"|format(row["invoice"].total_amount|float) }}
+                            </strong>
+                        </td>
+
+                        <td>
+                            {% if row["invoice"].status == "Paid" %}
+                                <span class="status paid">
+                                    {{ row["invoice"].status }}
+                                </span>
+                            {% else %}
+                                <span class="status">
+                                    {{ row["invoice"].status }}
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <a class="btn"
+                               href="{{ url_for('invoices.view_invoice', invoice_id=row['invoice'].id) }}">
+                                View
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    {% else %}
+
+        <div class="empty">
+            <h3>No invoices found</h3>
+            <p>Generated invoices will appear here.</p>
+        </div>
+
+    {% endif %}
+
+</div>
+
+</body>
+</html>
