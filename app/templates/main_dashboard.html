@@ -62,25 +62,11 @@
             margin: 10px 0;
         }
 
-        .blue {
-            border-left-color: #2563eb;
-        }
-
-        .green {
-            border-left-color: #16a34a;
-        }
-
-        .orange {
-            border-left-color: #ea580c;
-        }
-
-        .red {
-            border-left-color: #dc2626;
-        }
-
-        .purple {
-            border-left-color: #7c3aed;
-        }
+        .blue { border-left-color: #2563eb; }
+        .green { border-left-color: #16a34a; }
+        .orange { border-left-color: #ea580c; }
+        .red { border-left-color: #dc2626; }
+        .purple { border-left-color: #7c3aed; }
 
         .section {
             margin-top: 35px;
@@ -245,49 +231,47 @@
 
     </div>
 
-
     <div class="section">
 
         <h2>Quick Access</h2>
 
         <div class="links">
 
-            <a href="{{ url_for('salesman.new_order') }}" class="btn btn-primary">
-    Create Order
+            <a href="{{ url_for('salesman.new_order') }}">
+                Create Order
             </a>
 
-            <a href="{{ url_for('admin.orders') }}" class="btn btn-secondary">
-    Admin Order Approval
+            <a href="{{ url_for('admin.orders') }}">
+                Admin Order Approval
             </a>
 
-            <a href="{{ url_for('purchases.purchase_page') }}" class="btn btn-secondary">
-    Purchase Management
+            <a href="{{ url_for('purchases.purchase_page') }}">
+                Purchase Management
             </a>
 
-            <a href="{{ url_for('production.management') }}" class="btn btn-secondary">
-    Production Management
+            <a href="{{ url_for('production.bom_setup') }}">
+                Production Management
             </a>
 
-            <a href="{{ url_for('dispatch.management') }}" class="btn btn-secondary">
-    Dispatch Management
+            <a href="{{ url_for('dispatch.dispatch_page') }}">
+                Dispatch Management
             </a>
 
-            <a href="{{ url_for('invoices.management') }}" class="btn btn-secondary">
-    Invoice Management
+            <a href="{{ url_for('invoices.invoice_page') }}">
+                Invoice Management
             </a>
 
-            <a href="{{ url_for('payments.management') }}" class="btn btn-secondary">
-    Payment Management
+            <a href="{{ url_for('payments.payment_page') }}">
+                Payment Management
             </a>
 
-            <a href="{{ url_for('reports.analytics') }}" class="btn btn-secondary">
-    Reports & Analytics
+            <a href="{{ url_for('reports.reports_page') }}">
+                Reports & Analytics
             </a>
 
         </div>
 
     </div>
-
 
     <div class="section">
 
@@ -312,9 +296,7 @@
 
                 <tr>
                     <td>{{ order.order_number }}</td>
-
                     <td>{{ order.customer_name }}</td>
-
                     <td>{{ order.salesman_id }}</td>
 
                     <td>
