@@ -252,21 +252,37 @@
 
         <div class="links">
 
-            <a href="/salesman/new-order">Salesman / Create Order</a>
+            <a href="{{ url_for('salesman.new_order') }}" class="btn btn-primary">
+    Create Order
+            </a>
 
-            <a href="/admin/orders">Admin Order Approval</a>
+            <a href="{{ url_for('admin.orders') }}" class="btn btn-secondary">
+    Admin Order Approval
+            </a>
 
-            <a href="/purchases">Purchase Management</a>
+            <a href="{{ url_for('purchases.management') }}" class="btn btn-secondary">
+    Purchase Management
+            </a>
 
-            <a href="/production">Production Management</a>
+            <a href="{{ url_for('production.management') }}" class="btn btn-secondary">
+    Production Management
+            </a>
 
-            <a href="/dispatch">Dispatch Management</a>
+            <a href="{{ url_for('dispatch.management') }}" class="btn btn-secondary">
+    Dispatch Management
+            </a>
 
-            <a href="/invoices">Invoice Management</a>
+            <a href="{{ url_for('invoices.management') }}" class="btn btn-secondary">
+    Invoice Management
+            </a>
 
-            <a href="/payments">Payment Management</a>
+            <a href="{{ url_for('payments.management') }}" class="btn btn-secondary">
+    Payment Management
+            </a>
 
-            <a href="/reports">Reports & Analytics</a>
+            <a href="{{ url_for('reports.analytics') }}" class="btn btn-secondary">
+    Reports & Analytics
+            </a>
 
         </div>
 
