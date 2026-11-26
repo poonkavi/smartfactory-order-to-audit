@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
@@ -8,7 +8,7 @@ migrate = Migrate()
 
 def create_app():
 
-    app = Flask(__name__)  # Corrected
+    app = Flask(__name__)
 
     app.config.from_object("config.Config")
 
@@ -55,9 +55,9 @@ def create_app():
     from app.routes.auth import auth_bp
     app.register_blueprint(auth_bp)
 
-    # Home page
+    # Home page - redirect to login
     @app.route("/")
     def home():
-        return "SmartFactory Order-to-Audit System is Running!"
+        return redirect(url_for("auth.login"))
 
     return app
