@@ -60,4 +60,8 @@ def create_app():
     def home():
         return redirect(url_for("auth.login"))
 
+    # Initialize database tables
+    with app.app_context():
+        db.create_all()
+
     return app
