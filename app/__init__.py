@@ -1,6 +1,7 @@
 from flask import Flask, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+from werkzeug.security import generate_password_hash
 
 db = SQLAlchemy()
 migrate = Migrate()
@@ -60,8 +61,28 @@ def create_app():
     def home():
         return redirect(url_for("auth.login"))
 
-    # Initialize database tables
+    # Initialize database and demo admin
     with app.app_context():
+
         db.create_all()
+
+        from app.models.user import User
+
+        username = "kavi"
+        password = "1"
+        name = "Demo Admin"
+
+        existing_user = User.query.filter_by(username=username).first()
+
+        if not existing_user:
+            admin = User(
+                username=username,
+                name=name,
+                password=generate_password_hash(password),
+                role="admin"
+            )
+
+            db.session.add(admin)
+            db.session.commit()
 
     return app
