@@ -1,5 +1,7 @@
 from app import db
 from app.models import InventoryItem, Product
+from app.models.user import User
+from werkzeug.security import generate_password_hash
 
 
 def load_benchmark_data():
@@ -159,5 +161,23 @@ def load_benchmark_data():
             db.session.add(product)
 
     db.session.commit()
+
+    # -------------------------
+    # SALESMAN
+    # -------------------------
+    existing_salesman = User.query.filter_by(
+        username="salesman_a"
+    ).first()
+
+    if not existing_salesman:
+        salesman = User(
+            username="salesman_a",
+            name="Salesman A",
+            password=generate_password_hash("salesman123"),
+            role="Salesman"
+        )
+
+        db.session.add(salesman)
+        db.session.commit()
 
     print("Benchmark data loaded successfully!")
