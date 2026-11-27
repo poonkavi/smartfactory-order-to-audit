@@ -1,3 +1,4 @@
+
 from flask import Flask, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
@@ -61,18 +62,23 @@ def create_app():
     def home():
         return redirect(url_for("auth.login"))
 
-    # Initialize database and demo admin
+    # Initialize database and demo accounts/data
     with app.app_context():
 
         db.create_all()
 
         from app.models.user import User
 
+        # -------------------------
+        # CREATE DEMO ADMIN
+        # -------------------------
         username = "kavi"
         password = "1"
         name = "Demo Admin"
 
-        existing_user = User.query.filter_by(username=username).first()
+        existing_user = User.query.filter_by(
+            username=username
+        ).first()
 
         if not existing_user:
             admin = User(
@@ -84,5 +90,12 @@ def create_app():
 
             db.session.add(admin)
             db.session.commit()
+
+        # -------------------------
+        # LOAD BENCHMARK DATA
+        # -------------------------
+        from seed.benchmark_data import load_benchmark_data
+
+        load_benchmark_data()
 
     return app
